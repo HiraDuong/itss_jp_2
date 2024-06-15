@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
           D3Info.innerHTML = "Không tắc";
           D3Info.style.color = "#588c7e";
         }
-        if(event.data.includes('001')){
+        if(event.data .includes('001')){
           D3Info.innerHTML = "Có thể tắc";
           D3Info.style.color = "#ddb71e";
         }
