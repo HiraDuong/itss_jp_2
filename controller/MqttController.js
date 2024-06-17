@@ -15,7 +15,15 @@ const sendmessage = async (req, res) => {
     res.send('Message sent');
 };
 
+// test message
+const testmessage = async (req, res) => {
+    res.send('Test message');
+};
+// get message
+const getmessage = async (req, res) => {
+    res.send('Get message');
+};
 module.exports = {
     sendmessage,
- 
+ testmessage
 };

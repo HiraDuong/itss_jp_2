@@ -1,4 +1,6 @@
 
+const apiUrl = `${window.location.origin}/api/mqtt`; // Sử dụng window.location.origin để lấy base URL
+const wsUrl = 'wss://broker.hivemq.com:8884/mqtt'; // Tương tự cho WebSocket URL
 document.addEventListener('DOMContentLoaded', function () {
     console.log('main.js is loaded');
   
@@ -7,10 +9,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const YBtn = document.getElementById('Ybtn');
     const select = document.getElementById('select');
   
+    const D9Info = document.getElementById('D9-info');
+    const C7Info = document.getElementById('C7-info');
+    const D3Info = document.getElementById('D3-info');
+
     RBtn.addEventListener('click', async () => {
       
       try {
-        const response = await fetch("http://localhost:3000/api/mqtt", {
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -22,12 +28,13 @@ document.addEventListener('DOMContentLoaded', function () {
       } catch (error) {
         console.error('Error:', error);
       }
+
     });
   
     GBtn.addEventListener('click', async () => {
       
       try {
-        const response = await fetch("http://localhost:3000/api/mqtt", {
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -39,12 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
       } catch (error) {
         console.error('Error:', error);
       }
+  
     });
   
     YBtn.addEventListener('click', async () => {
       
       try {
-        const response = await fetch("http://localhost:3000/api/mqtt", {
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -61,60 +69,59 @@ document.addEventListener('DOMContentLoaded', function () {
 
   });
   
-  const ws = new WebSocket('ws://localhost:3000');
+  const client = mqtt.connect(wsUrl)
+  client.on('connect', () => {
+    console.log('MQTT over socket connected');
+    client.subscribe('ITSS_JP_2');
+  });
 
-  ws.onopen = () => {
-      console.log('WebSocket connection opened');
-  };
-
-  ws.onmessage = (event) => {
-
+  client.on('message', (topic, message) => {
+ 
+    if (topic === 'ITSS_JP_2') {
+      
       const D9Info = document.getElementById('D9-info');
       const C7Info = document.getElementById('C7-info');
       const D3Info = document.getElementById('D3-info');
 
-      if (event.data.includes('D9')) {
-          if(event.data.includes('100')){
+      if (message.includes('D9')) {
+          if(message.includes('100')){
             D9Info.innerHTML = "Đang tắc";
             D9Info.style.color = "#e63946";
           }
-          if(event.data.includes('010')){
+          if(message.includes('010')){
             D9Info.innerHTML = "Không tắc";
             D9Info.style.color = "#588c7e";
           }
-          if(event.data.includes('001')){
+          if(message.includes('001')){
             D9Info.innerHTML = "Có thể tắc";
             D9Info.style.color = "#ddb71e";
           }
-      } else if (event.data.includes('C7')) {
-        if(event.data.includes('100')){
+      } else if (message.includes('C7')) {
+        if(message.includes('100')){
           C7Info.innerHTML = "Đang tắc";
           C7Info.style.color = "#e63946";
         }
-        if(event.data.includes('010')){
+        if(message.includes('010')){
           C7Info.innerHTML = "Không tắc";
           C7Info.style.color = "#588c7e";
         }
-        if(event.data.includes('001')){
+        if(message.includes('001')){
           C7Info.innerHTML = "Có thể tắc";
           C7Info.style.color = "#ddb71e";
         }
-      } else if (event.data.includes('D3')) {
-        if(event.data.includes('100')){
+      } else if (message.includes('D3')) {
+        if(message.includes('100')){
           D3Info.innerHTML = "Đang tắc";
           D3Info.style.color = "#e63946";
         }
-        if(event.data.includes('010')){
+        if(message.includes('010')){
           D3Info.innerHTML = "Không tắc";
           D3Info.style.color = "#588c7e";
         }
-        if(event.data .includes('001')){
+        if(message .includes('001')){
           D3Info.innerHTML = "Có thể tắc";
           D3Info.style.color = "#ddb71e";
         }
       }
-    };
-
-  ws.onclose = () => {
-      console.log('WebSocket connection closed');
-  };
+    }
+  });
